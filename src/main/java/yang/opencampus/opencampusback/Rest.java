@@ -8,8 +8,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import yang.opencampus.opencampusback.entity.Baseinfo;
 import yang.opencampus.opencampusback.entity.Comment;
 import yang.opencampus.opencampusback.entity.User;
+import yang.opencampus.opencampusback.service.Email;
 import yang.opencampus.opencampusback.service.MongoDB;
 import yang.opencampus.opencampusback.service.Mysql;
+import yang.opencampus.opencampusback.utils.HashCode;
 import yang.opencampus.opencampusback.utils.Token;
 
 import java.util.List;
@@ -18,9 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+
 
 
 
@@ -33,18 +33,29 @@ public class Rest {
     private Mysql mysqldb;
     @Autowired
     private MongoDB mongo;
-    
-    
+    @Autowired
+    private Email emailer;
+
+
+    HashCode hash=new HashCode();
     
     @PostMapping("/hello")
-    public String hello() {
-        
-        return "hello8080";
+    public int hello() {
+        int get=hash.StringToInt("293559861@qq.com"+"软件工程");
+        return get;
     }
 
+    @PostMapping("/generateEmail")
+    public boolean gennerateEmail(@RequestParam("email") String email,@RequestParam ("password") String password,@RequestParam ("major") String major){
+        int code= hash.StringToInt(email+password+major);
+        return emailer.sendEmail(email,code);
+    }
      @PostMapping("/register") 
-     public String register(@RequestParam("email") String email,@RequestParam ("password") String password,@RequestParam ("major") String major,@RequestParam ("admission") int admission,@RequestParam("nickname") String nickname,HttpServletResponse response )
+     public String register(@RequestParam("email") String email,@RequestParam ("password") String password,@RequestParam ("major") String major,@RequestParam ("admission") int admission,@RequestParam("nickname") String nickname,@RequestParam("code") int code,HttpServletResponse response )
     {     
+    if(!hash.checkCode(email+password+major,code)){
+        return "codeError";
+    }
     User newUser=new User(email,password,major,admission,nickname);
     System.out.println(newUser.toString());
     boolean emailAlreadyRegistered;
