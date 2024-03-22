@@ -9,11 +9,15 @@ import org.springframework.stereotype.Service;
 
 import yang.opencampus.opencampusback.entity.Baseinfo;
 import yang.opencampus.opencampusback.entity.Comment;
+import yang.opencampus.opencampusback.entity.Question;
 import yang.opencampus.opencampusback.entity.UncheckedComment;
+import yang.opencampus.opencampusback.entity.UncheckedQuestion;
 import yang.opencampus.opencampusback.repository.BaseinfoRepository;
 import yang.opencampus.opencampusback.repository.CommentRepository;
 import yang.opencampus.opencampusback.repository.MongoDBRepository;
+import yang.opencampus.opencampusback.repository.QuestionRepository;
 import yang.opencampus.opencampusback.repository.UncheckedCommentRepository;
+import yang.opencampus.opencampusback.repository.UncheckedQuestionRepository;
 
 @Service
 @EnableMongoRepositories
@@ -21,10 +25,15 @@ public class MongoDB {
     private BaseinfoRepository baseinfoRepository;
     private CommentRepository commentRepository;
     private UncheckedCommentRepository uncheckedCommentRepository;
+    private UncheckedQuestionRepository uncheckedQuestionRepository;
+    private QuestionRepository questionRepository;
 
-    public MongoDB(BaseinfoRepository baseinfoRepository,CommentRepository commentRepository){
+    public MongoDB(BaseinfoRepository baseinfoRepository,CommentRepository commentRepository,UncheckedCommentRepository uncheckedCommentRepository,UncheckedQuestionRepository uncheckedQuestionRepository,QuestionRepository questionRepository){
         this.baseinfoRepository = baseinfoRepository;
         this.commentRepository=commentRepository;
+        this.uncheckedCommentRepository=uncheckedCommentRepository;
+        this.uncheckedQuestionRepository=uncheckedQuestionRepository;
+        this.questionRepository=questionRepository;
     }
     
     public Baseinfo getBaseinfoByTeacherID(int id){
@@ -64,5 +73,23 @@ public class MongoDB {
     boolean willCheck, int recommend, String others){
         UncheckedComment newComment=new UncheckedComment(teacherid,userEmail,className,nickname,EZtoPass,EZtoHighScore,useful,willCheck,recommend,others);
         uncheckedCommentRepository.save(newComment);
+    }
+    public void addUncheckedQuestion(int teacherID,String email,String className,String nickname,String question){
+        UncheckedQuestion newQuestion=new UncheckedQuestion(teacherID,email,className,nickname,question);
+        uncheckedQuestionRepository.save(newQuestion);
+    }
+    public void putUncheckedQuestionToQuestion(String QuestionID){
+        System.out.println(QuestionID);
+        UncheckedQuestion passedQuestion=uncheckedQuestionRepository.findBy_id(QuestionID);
+        Question question=new Question(passedQuestion.getTeacherID(),passedQuestion.getEmail(),passedQuestion.getClassName(),passedQuestion.getNickname(),passedQuestion.getQuestion());
+        questionRepository.save(question);
+    }
+    public void deleteUncheckedQuestion(String QuestionID){
+        UncheckedQuestion needToDelete=uncheckedQuestionRepository.findBy_id(QuestionID);
+        if(needToDelete !=null){
+        uncheckedQuestionRepository.delete(needToDelete);
+        }else{
+            System.out.println("已经删除了");
+        }
     }
 }

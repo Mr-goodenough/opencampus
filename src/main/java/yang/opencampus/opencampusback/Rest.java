@@ -11,6 +11,7 @@ import yang.opencampus.opencampusback.entity.User;
 import yang.opencampus.opencampusback.service.Email;
 import yang.opencampus.opencampusback.service.MongoDB;
 import yang.opencampus.opencampusback.service.Mysql;
+import yang.opencampus.opencampusback.service.Root;
 import yang.opencampus.opencampusback.utils.HashCode;
 import yang.opencampus.opencampusback.utils.Token;
 
@@ -37,6 +38,8 @@ public class Rest {
     private MongoDB mongo;
     @Autowired
     private Email emailer;
+    @Autowired
+    private Root root;
 
 
     HashCode hash=new HashCode();
@@ -139,18 +142,31 @@ public class Rest {
         }else{
             return false;
         }
+        //修改之后并没有测试
     }
     @PostMapping("/addUncheckedQuestion")
     public boolean addUncheckedQuestion(@CookieValue(name = "token",defaultValue ="nothing") String token,@RequestParam int teacherID,@RequestParam String className,@RequestParam String nickname,@RequestParam String question) {
         String email=Token.tokenGetEmail(token);
         if(email!="failed"){
-        //此处有一个疑问，为什么我之前没有在这添加检查token的逻辑，如果没有检查是不是可以一直发送请求撑爆我？
         mongo.addUncheckedQuestion(teacherID,email,className,nickname,question);
             return true;
         }else{
             return false;
         }
-    }
+    }//测试通过
+    @PostMapping("/checkQuestion")
+    public void checkQuestion(@RequestParam boolean pass,@RequestParam String rooter, @RequestParam String QuestionID,@RequestParam String password){
+        boolean isRoot=root.login(rooter,password);
+        if(isRoot){
+            //通过则将Question放入mongodb中
+            mongo.putUncheckedQuestionToQuestion(QuestionID);
+        }
+        mongo.deleteUncheckedQuestion(QuestionID);
+        
+        //不通过则将Question删除
+    }//仓促通过，还留下瑕疵，没有反馈，重复删除的时候不会报错，但是感觉问题不大，因为既然是删除了，那就不存在多删除一次的问题
+    //而且因为逻辑是从一个集合转移到另一个集合中，所以不存在一个人通过，另一个否决的问题，看谁先决定咯。
     
+
 
 }

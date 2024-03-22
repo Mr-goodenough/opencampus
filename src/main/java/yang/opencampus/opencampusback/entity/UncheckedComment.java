@@ -10,7 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Data;
 
-@Document(collection = "comments")
+@Document(collection = "uncheckedComments")
 @Data
 public class UncheckedComment {
     @Id
