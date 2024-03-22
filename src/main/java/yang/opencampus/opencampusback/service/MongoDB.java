@@ -9,15 +9,18 @@ import org.springframework.stereotype.Service;
 
 import yang.opencampus.opencampusback.entity.Baseinfo;
 import yang.opencampus.opencampusback.entity.Comment;
+import yang.opencampus.opencampusback.entity.UncheckedComment;
 import yang.opencampus.opencampusback.repository.BaseinfoRepository;
 import yang.opencampus.opencampusback.repository.CommentRepository;
 import yang.opencampus.opencampusback.repository.MongoDBRepository;
+import yang.opencampus.opencampusback.repository.UncheckedCommentRepository;
 
 @Service
 @EnableMongoRepositories
 public class MongoDB {
     private BaseinfoRepository baseinfoRepository;
     private CommentRepository commentRepository;
+    private UncheckedCommentRepository uncheckedCommentRepository;
 
     public MongoDB(BaseinfoRepository baseinfoRepository,CommentRepository commentRepository){
         this.baseinfoRepository = baseinfoRepository;
@@ -56,5 +59,10 @@ public class MongoDB {
     boolean willCheck, int recommend, String others){
         Comment newComment=new Comment(teacherid,userEmail,className,nickname,EZtoPass,EZtoHighScore,useful,willCheck,recommend,others);
         commentRepository.save(newComment);
+    }
+    public void addUncheckedComment(int teacherid, String userEmail,String className, String nickname, int EZtoPass, int EZtoHighScore, int useful,
+    boolean willCheck, int recommend, String others){
+        UncheckedComment newComment=new UncheckedComment(teacherid,userEmail,className,nickname,EZtoPass,EZtoHighScore,useful,willCheck,recommend,others);
+        uncheckedCommentRepository.save(newComment);
     }
 }

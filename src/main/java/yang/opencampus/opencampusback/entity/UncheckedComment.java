@@ -12,7 +12,7 @@ import lombok.Data;
 
 @Document(collection = "comments")
 @Data
-public class Comment {
+public class UncheckedComment {
     @Id
     private String _id;
     private int teacherID;
@@ -27,7 +27,7 @@ public class Comment {
     private String others;
     private int agreenum;
 
-    public Comment(int teacherid, String userEmail,String className, String nickname, int EZtoPass, int EZtoHighScore, int useful,
+    public UncheckedComment(int teacherid, String userEmail,String className, String nickname, int EZtoPass, int EZtoHighScore, int useful,
             boolean willCheck, int recommend, String others) {
         this.teacherID = teacherid;
         this.userEmail = userEmail;
@@ -41,6 +41,6 @@ public class Comment {
         this.agreenum=0;
         this.className=className;
     }
-    public Comment() {
+    public UncheckedComment() {
     }
 }

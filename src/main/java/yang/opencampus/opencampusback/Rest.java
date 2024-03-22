@@ -20,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 
 
@@ -127,14 +129,28 @@ public class Rest {
     public List<Baseinfo> selectTeacherAndDept(@RequestParam String dept,@RequestParam String teacherName) {
         return mongo.deptAndSelectTeacherName(dept, teacherName);
     }
-    @PostMapping("/addComment")
-    public void addComment(@CookieValue(name = "token",defaultValue ="nothing") String token,@RequestParam int teacherID,@RequestParam String className,@RequestParam String nickname,@RequestParam int eztopass,@RequestParam int eztohighscore,@RequestParam int useful,@RequestParam boolean willcheck,@RequestParam int recommend,@RequestParam String others){
-        System.out.println(eztohighscore);
+    @PostMapping("/addUncheckedComment")
+    public boolean addUncheckedComment(@CookieValue(name = "token",defaultValue ="nothing") String token,@RequestParam int teacherID,@RequestParam String className,@RequestParam String nickname,@RequestParam int eztopass,@RequestParam int eztohighscore,@RequestParam int useful,@RequestParam boolean willcheck,@RequestParam int recommend,@RequestParam String others){
         String email=Token.tokenGetEmail(token);
-        mongo.addComment(teacherID,email,className,nickname,eztopass,eztohighscore,useful,willcheck,recommend,others);
+        if(email!="failed"){
+        //此处有一个疑问，为什么我之前没有在这添加检查token的逻辑，如果没有检查是不是可以一直发送请求撑爆我？
+        mongo.addUncheckedComment(teacherID,email,className,nickname,eztopass,eztohighscore,useful,willcheck,recommend,others);
+            return true;
+        }else{
+            return false;
+        }
     }
-    
-    
+    @PostMapping("/addUncheckedQuestion")
+    public boolean addUncheckedQuestion(@CookieValue(name = "token",defaultValue ="nothing") String token,@RequestParam int teacherID,@RequestParam String className,@RequestParam String nickname,@RequestParam String question) {
+        String email=Token.tokenGetEmail(token);
+        if(email!="failed"){
+        //此处有一个疑问，为什么我之前没有在这添加检查token的逻辑，如果没有检查是不是可以一直发送请求撑爆我？
+        mongo.addUncheckedQuestion(teacherID,email,className,nickname,question);
+            return true;
+        }else{
+            return false;
+        }
+    }
     
 
 }
