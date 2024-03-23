@@ -7,6 +7,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import yang.opencampus.opencampusback.entity.Baseinfo;
 import yang.opencampus.opencampusback.entity.Comment;
+import yang.opencampus.opencampusback.entity.UncheckedComment;
 import yang.opencampus.opencampusback.entity.User;
 import yang.opencampus.opencampusback.service.Email;
 import yang.opencampus.opencampusback.service.MongoDB;
@@ -144,11 +145,11 @@ public class Rest {
         }
         //修改之后并没有测试
     }
-    @PostMapping("/addUncheckedQuestion")
-    public boolean addUncheckedQuestion(@CookieValue(name = "token",defaultValue ="nothing") String token,@RequestParam int teacherID,@RequestParam String className,@RequestParam String nickname,@RequestParam String question) {
+    @PostMapping("/addUncheckedQuestion")//提问题
+    public boolean addUncheckedQuestion(@CookieValue(name = "token",defaultValue ="nothing") String token,@RequestParam int teacherID,@RequestParam String className,@RequestParam String nickname,@RequestParam String question,@RequestParam String teacherName,@RequestParam String department) {
         String email=Token.tokenGetEmail(token);
         if(email!="failed"){
-        mongo.addUncheckedQuestion(teacherID,email,className,nickname,question);
+        mongo.addUncheckedQuestion(teacherID,email,className,nickname,question,teacherName,department);
             return true;
         }else{
             return false;
@@ -158,14 +159,40 @@ public class Rest {
     public void checkQuestion(@RequestParam boolean pass,@RequestParam String rooter, @RequestParam String QuestionID,@RequestParam String password){
         boolean isRoot=root.login(rooter,password);
         if(isRoot){
+            if(pass){
             //通过则将Question放入mongodb中
             mongo.putUncheckedQuestionToQuestion(QuestionID);
+            }
         }
         mongo.deleteUncheckedQuestion(QuestionID);
-        
+    
         //不通过则将Question删除
     }//仓促通过，还留下瑕疵，没有反馈，重复删除的时候不会报错，但是感觉问题不大，因为既然是删除了，那就不存在多删除一次的问题
     //而且因为逻辑是从一个集合转移到另一个集合中，所以不存在一个人通过，另一个否决的问题，看谁先决定咯。
+    @PostMapping("/answerQuestion")
+    public boolean answerQuestion(@RequestParam String questionID,@CookieValue(name = "token",defaultValue ="nothing") String token,@RequestParam int teacherID,@RequestParam String className,@RequestParam String nickname,@RequestParam int eztopass,@RequestParam int eztohighscore,@RequestParam int useful,@RequestParam boolean willcheck,@RequestParam int recommend,@RequestParam String others){
+        String email=Token.tokenGetEmail(token);
+        if(email!="failed"){
+            mongo.QuestionPlusUnckeckedAnswer(questionID, teacherID, email, className, nickname, eztopass, eztohighscore, useful, willcheck, recommend, others);
+            return true;//将问题合并解答并提交到unchecked数据库
+        }else{
+            return false;
+        }
+    }//对一个问题进行解答
+    @PostMapping("/checkComment")
+    public void checkComment(@RequestParam boolean pass,@RequestParam String rooter, @RequestParam String CommentID,@RequestParam String password){
+        boolean isRoot=root.login(rooter,password);
+        if(isRoot){
+            if(pass){
+            //通过则将Question放入mongodb中
+            mongo.putUnckeckCommentInComment(CommentID);;
+            }
+        else{
+            mongo.deleteUncheckComment(CommentID);
+        }
+        //不通过则将Question删除
+        }
+    }
     
 
 

@@ -74,14 +74,13 @@ public class MongoDB {
         UncheckedComment newComment=new UncheckedComment(teacherid,userEmail,className,nickname,EZtoPass,EZtoHighScore,useful,willCheck,recommend,others);
         uncheckedCommentRepository.save(newComment);
     }
-    public void addUncheckedQuestion(int teacherID,String email,String className,String nickname,String question){
-        UncheckedQuestion newQuestion=new UncheckedQuestion(teacherID,email,className,nickname,question);
+    public void addUncheckedQuestion(int teacherID,String email,String className,String nickname,String question,String teacherName,String department){
+        UncheckedQuestion newQuestion=new UncheckedQuestion(teacherID,email,className,nickname,question,teacherName,department);
         uncheckedQuestionRepository.save(newQuestion);
     }
     public void putUncheckedQuestionToQuestion(String QuestionID){
-        System.out.println(QuestionID);
         UncheckedQuestion passedQuestion=uncheckedQuestionRepository.findBy_id(QuestionID);
-        Question question=new Question(passedQuestion.getTeacherID(),passedQuestion.getEmail(),passedQuestion.getClassName(),passedQuestion.getNickname(),passedQuestion.getQuestion());
+        Question question=new Question(passedQuestion.getTeacherID(),passedQuestion.getEmail(),passedQuestion.getClassName(),passedQuestion.getNickname(),passedQuestion.getQuestion(),passedQuestion.getTeacherName(),passedQuestion.getDepartment());
         questionRepository.save(question);
     }
     public void deleteUncheckedQuestion(String QuestionID){
@@ -92,4 +91,38 @@ public class MongoDB {
             System.out.println("已经删除了");
         }
     }
+    public void deleteUncheckComment(String CommentID)
+    {
+        UncheckedComment needToDelete=uncheckedCommentRepository.findBy_id(CommentID);
+        if(needToDelete !=null){
+        uncheckedCommentRepository.delete(needToDelete);
+        }else{
+            System.out.println("已经删除了");
+        }
+    }   //删除没有通过审核的评论
+    public void putUnckeckCommentInComment(String  commentID){
+        UncheckedComment uncheckedComment=uncheckedCommentRepository.findBy_id(commentID);
+        uncheckedCommentRepository.deleteBy_id(commentID);
+        Comment comment=new Comment(
+            uncheckedComment.getTeacherID(),
+            uncheckedComment.getUserEmail(),
+            uncheckedComment.getClassName(),
+            uncheckedComment.getNickname(),
+            uncheckedComment.getEZtoPass(),   // 修改此处，假设 getComment() 方法改为 getEZtoPass() 返回类型为 int
+            uncheckedComment.getEZtoHighScore(),
+            uncheckedComment.getUseful(),
+            uncheckedComment.isWillCheck(),   // 修改此处，假设 isWillCheck() 方法返回类型为 boolean
+            uncheckedComment.getRecommend(),
+            uncheckedComment.getOthers()
+        );
+        commentRepository.save(comment);
+    }//将通过审核的comment保存
+    public void QuestionPlusUnckeckedAnswer(String QuestionID,int teacherid, String userEmail,String className, String nickname, int EZtoPass, int EZtoHighScore, int useful,
+    boolean willCheck, int recommend, String others)
+   {
+        Question question=questionRepository.findBy_id(QuestionID);
+        UncheckedComment answer=new UncheckedComment(teacherid,userEmail,className,nickname,EZtoPass,EZtoHighScore,useful,willCheck,recommend,others);
+        answer.setOthers(question.getNickname()+"问如下问题："+question.getQuestion()+"    收到如下解答"+answer.getOthers());
+        uncheckedCommentRepository.save(answer);
+    }//将问题和回答合并并保存到unchecked中
 }
