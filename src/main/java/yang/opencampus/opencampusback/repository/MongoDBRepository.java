@@ -12,6 +12,9 @@ import org.springframework.stereotype.Repository;
 
 import yang.opencampus.opencampusback.entity.Baseinfo;
 import yang.opencampus.opencampusback.entity.Comment;
+import yang.opencampus.opencampusback.entity.Question;
+import yang.opencampus.opencampusback.entity.UncheckedComment;
+import yang.opencampus.opencampusback.entity.UncheckedQuestion;
 
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
@@ -69,5 +72,28 @@ public class MongoDBRepository {
         List<Baseinfo> results = mongoTemplate.find(query, Baseinfo.class);
         return results;
     }
-    
+    public List<Question> findQuestionBy_id(int max,int min){
+        AggregationOperation sort = Aggregation.sort(Direction.DESC, "_id");
+        AggregationOperation skip = Aggregation.skip(min - 1);
+        AggregationOperation limit = Aggregation.limit(max - min + 1);
+
+        Aggregation aggregation = Aggregation.newAggregation( sort, skip, limit);
+        return mongoTemplate.aggregate(aggregation, "question", Question.class).getMappedResults();
+    }
+    public List<UncheckedComment> findUncheckedCommentBy_id(int max,int min){
+        AggregationOperation sort = Aggregation.sort(Direction.DESC, "_id");
+        AggregationOperation skip = Aggregation.skip(min - 1);
+        AggregationOperation limit = Aggregation.limit(max - min + 1);
+
+        Aggregation aggregation = Aggregation.newAggregation( sort, skip, limit);
+        return mongoTemplate.aggregate(aggregation, "uncheckedComment", UncheckedComment.class).getMappedResults();
+    }
+    public List<UncheckedQuestion> findUncheckedQuestionBy_id(int max,int min){
+        AggregationOperation sort = Aggregation.sort(Direction.DESC, "_id");
+        AggregationOperation skip = Aggregation.skip(min - 1);
+        AggregationOperation limit = Aggregation.limit(max - min + 1);
+
+        Aggregation aggregation = Aggregation.newAggregation( sort, skip, limit);
+        return mongoTemplate.aggregate(aggregation, "UncheckedQuestion", UncheckedQuestion.class).getMappedResults();
+    }
 }

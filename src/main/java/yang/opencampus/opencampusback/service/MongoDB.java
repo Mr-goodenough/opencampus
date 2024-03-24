@@ -93,6 +93,8 @@ public class MongoDB {
     }
     public void deleteUncheckComment(String CommentID)
     {
+        //值得注意的是，因为审核的存在，会出现同时一个问题被两个解答的情况
+        //这个时候查找questionID的时候会出现找不到的情况，即被删除了
         UncheckedComment needToDelete=uncheckedCommentRepository.findBy_id(CommentID);
         if(needToDelete !=null){
         uncheckedCommentRepository.delete(needToDelete);
@@ -125,4 +127,13 @@ public class MongoDB {
         answer.setOthers(question.getNickname()+"问如下问题："+question.getQuestion()+"    收到如下解答"+answer.getOthers());
         uncheckedCommentRepository.save(answer);
     }//将问题和回答合并并保存到unchecked中
+    public List<Question> getQuestion(int max,int min){
+        return mongoDBRepository.findQuestionBy_id(max, min);
+    }
+    public List<UncheckedComment> getUncheckedComment(int max,int min){
+        return mongoDBRepository.findUncheckedCommentBy_id(max, min);
+    }
+    public List<UncheckedQuestion> getUncheckedQuestion(int max,int min){
+        return mongoDBRepository.findUncheckedQuestionBy_id(max, min);
+    }
 }

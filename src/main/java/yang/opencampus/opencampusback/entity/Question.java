@@ -17,7 +17,7 @@ public class Question {
     public String question;
     public String teacherName;
     public String department;
-    //添加teacherName而不查询是为了减少查询开销
+    //添加teacherName而不用再次查询是为了减少查询开销
     public Question(int teacherID, String email, String className, String nickname, String question, String teacherName,
             String department) {
         this.teacherID = teacherID;

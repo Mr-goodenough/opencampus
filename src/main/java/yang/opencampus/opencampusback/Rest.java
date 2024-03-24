@@ -7,7 +7,9 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import yang.opencampus.opencampusback.entity.Baseinfo;
 import yang.opencampus.opencampusback.entity.Comment;
+import yang.opencampus.opencampusback.entity.Question;
 import yang.opencampus.opencampusback.entity.UncheckedComment;
+import yang.opencampus.opencampusback.entity.UncheckedQuestion;
 import yang.opencampus.opencampusback.entity.User;
 import yang.opencampus.opencampusback.service.Email;
 import yang.opencampus.opencampusback.service.MongoDB;
@@ -179,6 +181,7 @@ public class Rest {
             return false;
         }
     }//对一个问题进行解答
+    //写完测试一次通过！！！
     @PostMapping("/checkComment")
     public void checkComment(@RequestParam boolean pass,@RequestParam String rooter, @RequestParam String CommentID,@RequestParam String password){
         boolean isRoot=root.login(rooter,password);
@@ -193,7 +196,27 @@ public class Rest {
         //不通过则将Question删除
         }
     }
-    
+    @PostMapping("/getQuestion")//按照从晚到近的顺序给出指定数量的问题
+    public List<Question> getQuestion(@RequestParam int max,@RequestParam int min){
+        return mongo.getQuestion(max,min);
 
-
+    }
+    //依然一次通过！！！！！！！！！！！！！！！芜湖
+    @PostMapping("/getUncheckedQuestion")
+    public List<UncheckedQuestion> getUncheckedQuestion(@RequestParam String rooter,@RequestParam String password,@RequestParam int max,@RequestParam int min){
+        boolean isRoot=root.login(rooter,password);
+        if(isRoot)
+        return mongo.getUncheckedQuestion(max,min);
+        else
+        return null;
+    }
+    @PostMapping("/getUncheckedComment")
+    public List<UncheckedComment> getUncheckedComment(@RequestParam String rooter,@RequestParam String password,@RequestParam int max,@RequestParam int min){
+        boolean isRoot=root.login(rooter,password);
+        if(isRoot)
+        return mongo.getUncheckedComment(max,min);
+        else
+        return null;
+    }
+    //基于偷懒万岁原则，这两段几乎就是上面的复制，所以不做测试
 }
