@@ -6,4 +6,5 @@ import yang.opencampus.opencampusback.entity.Baseinfo;
 
 public interface BaseinfoRepository extends MongoRepository<Baseinfo,Integer>{
     public Baseinfo getBaseinfoByTeacherID(int TeacherID);
+    public Baseinfo findByTeacherID(int TeacherID);
 }

@@ -86,7 +86,7 @@ public class MongoDBRepository {
         AggregationOperation limit = Aggregation.limit(max - min + 1);
 
         Aggregation aggregation = Aggregation.newAggregation( sort, skip, limit);
-        return mongoTemplate.aggregate(aggregation, "uncheckedComment", UncheckedComment.class).getMappedResults();
+        return mongoTemplate.aggregate(aggregation, "uncheckedComments", UncheckedComment.class).getMappedResults();
     }
     public List<UncheckedQuestion> findUncheckedQuestionBy_id(int max,int min){
         AggregationOperation sort = Aggregation.sort(Direction.DESC, "_id");
@@ -94,6 +94,6 @@ public class MongoDBRepository {
         AggregationOperation limit = Aggregation.limit(max - min + 1);
 
         Aggregation aggregation = Aggregation.newAggregation( sort, skip, limit);
-        return mongoTemplate.aggregate(aggregation, "UncheckedQuestion", UncheckedQuestion.class).getMappedResults();
+        return mongoTemplate.aggregate(aggregation, "uncheckedQuestion", UncheckedQuestion.class).getMappedResults();
     }
 }

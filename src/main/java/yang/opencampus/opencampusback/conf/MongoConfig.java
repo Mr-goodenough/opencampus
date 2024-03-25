@@ -11,4 +11,4 @@ public class MongoConfig {
         mappingMongoConverter.setTypeMapper(new DefaultMongoTypeMapper(null)); // 禁用类型映射
     }
 }
-//为了解决_id的问题，这个字段虽然是mongodb生成的，但是会有一些配置上的问题- 
+//为了解决_class的问题，这个字段虽然是mongodb生成的，但是会有一些配置上的问题- 

@@ -148,25 +148,25 @@ public class Rest {
         //修改之后并没有测试
     }
     @PostMapping("/addUncheckedQuestion")//提问题
-    public boolean addUncheckedQuestion(@CookieValue(name = "token",defaultValue ="nothing") String token,@RequestParam int teacherID,@RequestParam String className,@RequestParam String nickname,@RequestParam String question,@RequestParam String teacherName,@RequestParam String department) {
+    public boolean addUncheckedQuestion(@CookieValue(name = "token",defaultValue ="nothing") String token,@RequestParam int teacherID,@RequestParam String className,@RequestParam String nickname,@RequestParam String question) {
         String email=Token.tokenGetEmail(token);
         if(email!="failed"){
-        mongo.addUncheckedQuestion(teacherID,email,className,nickname,question,teacherName,department);
+        mongo.addUncheckedQuestion(teacherID,email,className,nickname,question);
             return true;
         }else{
             return false;
         }
     }//测试通过
     @PostMapping("/checkQuestion")
-    public void checkQuestion(@RequestParam boolean pass,@RequestParam String rooter, @RequestParam String QuestionID,@RequestParam String password){
+    public void checkQuestion(@RequestParam boolean pass,@RequestParam String rooter, @RequestParam String questionID,@RequestParam String password){
         boolean isRoot=root.login(rooter,password);
         if(isRoot){
             if(pass){
             //通过则将Question放入mongodb中
-            mongo.putUncheckedQuestionToQuestion(QuestionID);
+            mongo.putUncheckedQuestionToQuestion(questionID);
             }
         }
-        mongo.deleteUncheckedQuestion(QuestionID);
+        mongo.deleteUncheckedQuestion(questionID);
     
         //不通过则将Question删除
     }//仓促通过，还留下瑕疵，没有反馈，重复删除的时候不会报错，但是感觉问题不大，因为既然是删除了，那就不存在多删除一次的问题
@@ -174,6 +174,7 @@ public class Rest {
     @PostMapping("/answerQuestion")
     public boolean answerQuestion(@RequestParam String questionID,@CookieValue(name = "token",defaultValue ="nothing") String token,@RequestParam int teacherID,@RequestParam String className,@RequestParam String nickname,@RequestParam int eztopass,@RequestParam int eztohighscore,@RequestParam int useful,@RequestParam boolean willcheck,@RequestParam int recommend,@RequestParam String others){
         String email=Token.tokenGetEmail(token);
+        System.out.println(questionID+teacherID+email+className+nickname+others);
         if(email!="failed"){
             mongo.QuestionPlusUnckeckedAnswer(questionID, teacherID, email, className, nickname, eztopass, eztohighscore, useful, willcheck, recommend, others);
             return true;//将问题合并解答并提交到unchecked数据库
@@ -183,15 +184,15 @@ public class Rest {
     }//对一个问题进行解答
     //写完测试一次通过！！！
     @PostMapping("/checkComment")
-    public void checkComment(@RequestParam boolean pass,@RequestParam String rooter, @RequestParam String CommentID,@RequestParam String password){
+    public void checkComment(@RequestParam boolean pass,@RequestParam String rooter, @RequestParam String commentID,@RequestParam String password){
         boolean isRoot=root.login(rooter,password);
         if(isRoot){
             if(pass){
             //通过则将Question放入mongodb中
-            mongo.putUnckeckCommentInComment(CommentID);;
+            mongo.putUnckeckCommentInComment(commentID);;
             }
         else{
-            mongo.deleteUncheckComment(CommentID);
+            mongo.deleteUncheckComment(commentID);
         }
         //不通过则将Question删除
         }

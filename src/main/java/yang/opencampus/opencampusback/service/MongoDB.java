@@ -74,7 +74,10 @@ public class MongoDB {
         UncheckedComment newComment=new UncheckedComment(teacherid,userEmail,className,nickname,EZtoPass,EZtoHighScore,useful,willCheck,recommend,others);
         uncheckedCommentRepository.save(newComment);
     }
-    public void addUncheckedQuestion(int teacherID,String email,String className,String nickname,String question,String teacherName,String department){
+    public void addUncheckedQuestion(int teacherID,String email,String className,String nickname,String question){
+        Baseinfo teacher =baseinfoRepository.findByTeacherID(teacherID);
+        String teacherName=teacher.getName();
+        String department=teacher.getDept();
         UncheckedQuestion newQuestion=new UncheckedQuestion(teacherID,email,className,nickname,question,teacherName,department);
         uncheckedQuestionRepository.save(newQuestion);
     }
