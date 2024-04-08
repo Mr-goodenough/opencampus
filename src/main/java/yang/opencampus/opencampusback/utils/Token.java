@@ -63,6 +63,7 @@ public class Token {
 
     static public boolean checkToken(String token){
         
+        System.out.println("token"+token);
         String[] parts = token.split("\\.");
         String payloadJson = parts[0];
         String sinature = parts[1];
@@ -132,6 +133,7 @@ public class Token {
         return true;
     }
     static public boolean checkTokenAndEmail(String token,String needCheckEmail){
+        System.out.println("token"+token);
         String[] parts = token.split("\\.");
         String payloadJson = parts[0];
         String sinature = parts[1];

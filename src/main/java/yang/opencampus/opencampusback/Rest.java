@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 
 
@@ -80,7 +81,7 @@ public class Rest {
     } 
     @PostMapping("/login")
     public String login(@RequestParam String email,@RequestParam String password,@CookieValue(name = "token",defaultValue ="nothing") String token,HttpServletResponse response) {
-        System.out.println(email+password);
+        System.out.println(email+password+token);
         if(token.equals("nothing")){
             if(mysqldb.login(email,password)){//没有token，进行登录
                 Cookie cookie=new Cookie("token",Token.generateJWT(email));
@@ -125,7 +126,6 @@ public class Rest {
     @PostMapping("/check")//检查token是否是对的
     public boolean check(@CookieValue(name = "token",defaultValue ="nothing") String token) {
         return Token.checkToken(token);
-
     }
     @PostMapping("/selectTeacher")
     public List<Baseinfo> selectTeacher(@RequestParam String teacherName) {
